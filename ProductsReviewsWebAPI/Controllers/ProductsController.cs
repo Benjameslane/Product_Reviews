@@ -53,8 +53,8 @@ namespace ProductsReviewsWebAPI.Controllers
                 {
                     Text = r.Text,
                     Rating = r.Rating,
-                }).ToList()
-
+                }).ToList(),
+                AverageRating = p.Reviews.Any() ? p.Reviews.Average(r => r.Rating) : 0 // AverageRating calculation added
             }).FirstOrDefault(r => r.Id == id);
 
             if (product == null)
@@ -63,7 +63,6 @@ namespace ProductsReviewsWebAPI.Controllers
             }
             return Ok(product); // Returns 200 status code
         }
-
         // POST api/<ProductsController>
         [HttpPost]
         public IActionResult Post([FromBody]Product product)
