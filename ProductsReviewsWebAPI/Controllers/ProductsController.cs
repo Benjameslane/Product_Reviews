@@ -22,13 +22,23 @@ namespace ProductsReviewsWebAPI.Controllers
         }
         // GET: api/<ProductsController>
         [HttpGet]
-        public IActionResult GetAll(int id)
+        public IActionResult GetAll([FromQuery] double? maxPrice)
         {
-            var product = _context.Products.ToList();
-            return Ok(product);
-
+            // check if maxPrice has value, which means it is supplied in the query parameters
+            if (maxPrice.HasValue)
+            {
+                // if maxPrice is supplied, filter products by price, and convert to list
+                var products = _context.Products.Where(p => p.Price <= maxPrice.Value).ToList();
+                return Ok(products);
+            }
+            else
+            {
+                // if maxPrice is not supplied, return all products
+                var products = _context.Products.ToList();
+                return Ok(products);
+            }
         }
-          
+
 
         // GET api/<ProductsController>/5
         [HttpGet("{id}")]
@@ -98,5 +108,18 @@ namespace ProductsReviewsWebAPI.Controllers
 
 
         }
+        [HttpGet("search/{price}")]
+        public IActionResult Search(double price)
+        {
+            var products = _context.Products.Where(p => p.Price == price).ToList();
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
     }
+    //var products = _context.products.FirstOrDefault(p => .price == price);
 }
